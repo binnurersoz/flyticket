@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Plane, MapPin, Calendar, Users, Search, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,32 +9,62 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+interface City {
+  city_id: string;
+  city_name: string;
+}
+
+interface Flight {
+  flight_id: string;
+  from_city: string;
+  to_city: string;
+  departure_time: string;
+  arrival_time: string;
+  price: number;
+  seats_available: number;
+  seats_total: number;
+}
+
 const Index = () => {
-  const [cities, setCities] = useState([]);
+  const navigate = useNavigate();
+  const [cities, setCities] = useState<City[]>([]);
   const [fromCity, setFromCity] = useState("");
   const [toCity, setToCity] = useState("");
   const [date, setDate] = useState("");
-  const [flights, setFlights] = useState([]);
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
 
-  // Mock data for demonstration - replace with actual API calls
   useEffect(() => {
-    // Simulate loading Turkish cities
-    const turkishCities = [
-      { city_id: "IST", city_name: "İstanbul" },
-      { city_id: "ANK", city_name: "Ankara" },
-      { city_id: "IZM", city_name: "İzmir" },
-      { city_id: "ADB", city_name: "Adana" },
-      { city_id: "AYT", city_name: "Antalya" },
-      { city_id: "TZX", city_name: "Trabzon" },
-      { city_id: "ESB", city_name: "Eskişehir" },
-      { city_id: "KYS", city_name: "Kayseri" }
-    ];
-    setCities(turkishCities);
+    fetchCities();
   }, []);
 
-  const handleSearch = (e) => {
+  const fetchCities = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/cities');
+      if (!response.ok) {
+        throw new Error('Şehirler yüklenemedi');
+      }
+      const data = await response.json();
+      setCities(data);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+      // Fallback to mock data if API fails
+      const mockCities = [
+        { city_id: "1", city_name: "İstanbul" },
+        { city_id: "2", city_name: "Ankara" },
+        { city_id: "3", city_name: "İzmir" },
+        { city_id: "4", city_name: "Adana" },
+        { city_id: "5", city_name: "Antalya" },
+        { city_id: "6", city_name: "Trabzon" },
+        { city_id: "7", city_name: "Eskişehir" },
+        { city_id: "8", city_name: "Kayseri" }
+      ];
+      setCities(mockCities);
+    }
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!fromCity || !toCity || !date) {
@@ -49,52 +80,49 @@ const Index = () => {
     setLoading(true);
     setSearchPerformed(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      const mockFlights = [
-        {
-          flight_id: "TK101",
-          from_city_name: cities.find(c => c.city_id === fromCity)?.city_name,
-          to_city_name: cities.find(c => c.city_id === toCity)?.city_name,
-          departure_time: new Date(date + "T08:30:00"),
-          arrival_time: new Date(date + "T10:45:00"),
-          price: 450,
-          seats_available: 23
-        },
-        {
-          flight_id: "PC202",
-          from_city_name: cities.find(c => c.city_id === fromCity)?.city_name,
-          to_city_name: cities.find(c => c.city_id === toCity)?.city_name,
-          departure_time: new Date(date + "T14:15:00"),
-          arrival_time: new Date(date + "T16:30:00"),
-          price: 380,
-          seats_available: 12
-        },
-        {
-          flight_id: "SU303",
-          from_city_name: cities.find(c => c.city_id === fromCity)?.city_name,
-          to_city_name: cities.find(c => c.city_id === toCity)?.city_name,
-          departure_time: new Date(date + "T19:00:00"),
-          arrival_time: new Date(date + "T21:15:00"),
-          price: 520,
-          seats_available: 8
-        }
-      ];
+    try {
+      const params = new URLSearchParams({
+        from_city: fromCity,
+        to_city: toCity,
+        date: date
+      });
+
+      const response = await fetch(`http://localhost:3001/api/flights?${params}`);
       
-      setFlights(mockFlights);
+      if (!response.ok) {
+        throw new Error('Uçuşlar yüklenemedi');
+      }
+
+      const data = await response.json();
+      setFlights(data);
+      
+      if (data.length > 0) {
+        toast.success(`${data.length} adet uçuş bulundu!`);
+      } else {
+        toast.info("Belirtilen kriterlere uygun uçuş bulunamadı");
+      }
+    } catch (error) {
+      console.error('Error searching flights:', error);
+      toast.error("Uçuş arama sırasında bir hata oluştu");
+      setFlights([]);
+    } finally {
       setLoading(false);
-      toast.success("Uçuşlar başarıyla bulundu!");
-    }, 1500);
+    }
   };
 
-  const handleBookFlight = (flight) => {
-    toast.success(`${flight.flight_id} numaralı uçuş için rezervasyon sayfasına yönlendiriliyorsunuz...`);
+  const handleFlightSelect = (flightId: string) => {
+    navigate(`/flight/${flightId}`);
   };
 
   const swapCities = () => {
     const temp = fromCity;
     setFromCity(toCity);
     setToCity(temp);
+  };
+
+  const getCityName = (cityId: string) => {
+    const city = cities.find(c => c.city_id === cityId);
+    return city ? city.city_name : cityId;
   };
 
   const today = new Date().toISOString().split("T")[0];
@@ -113,6 +141,15 @@ const Index = () => {
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
               Türkiye'nin her köşesine güvenli ve konforlu uçuşlar. Hayalinizdeki destinasyona bir tık uzaktasınız.
             </p>
+            <div className="mt-6">
+              <Button
+                onClick={() => navigate('/admin/login')}
+                variant="outline"
+                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+              >
+                Admin Girişi
+              </Button>
+            </div>
           </div>
 
           {/* Search Form */}
@@ -242,8 +279,9 @@ const Index = () => {
               {flights.map((flight, index) => (
                 <Card 
                   key={flight.flight_id} 
-                  className="overflow-hidden border-2 border-gray-100 hover:border-blue-300 hover:shadow-xl transition-all duration-300 animate-fade-in"
+                  className="overflow-hidden border-2 border-gray-100 hover:border-blue-300 hover:shadow-xl transition-all duration-300 animate-fade-in cursor-pointer"
                   style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={() => handleFlightSelect(flight.flight_id)}
                 >
                   <CardContent className="p-6">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -255,9 +293,9 @@ const Index = () => {
                           </div>
                           <div>
                             <h3 className="text-xl font-bold text-gray-800">
-                              {flight.from_city_name} → {flight.to_city_name}
+                              {getCityName(flight.from_city)} → {getCityName(flight.to_city)}
                             </h3>
-                            <p className="text-sm text-gray-500">Uçuş {flight.flight_id}</p>
+                            <p className="text-sm text-gray-500">Uçuş {flight.flight_id.substring(0, 8)}</p>
                           </div>
                         </div>
 
@@ -265,22 +303,22 @@ const Index = () => {
                           <div>
                             <p className="text-sm text-gray-500 mb-1">Kalkış</p>
                             <p className="font-semibold text-gray-800">
-                              {flight.departure_time.toLocaleTimeString('tr-TR', { 
+                              {new Date(flight.departure_time).toLocaleTimeString('tr-TR', { 
                                 hour: '2-digit', 
                                 minute: '2-digit' 
                               })}
                             </p>
-                            <p className="text-sm text-gray-500">{flight.from_city_name}</p>
+                            <p className="text-sm text-gray-500">{getCityName(flight.from_city)}</p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500 mb-1">Varış</p>
                             <p className="font-semibold text-gray-800">
-                              {flight.arrival_time.toLocaleTimeString('tr-TR', { 
+                              {new Date(flight.arrival_time).toLocaleTimeString('tr-TR', { 
                                 hour: '2-digit', 
                                 minute: '2-digit' 
                               })}
                             </p>
-                            <p className="text-sm text-gray-500">{flight.to_city_name}</p>
+                            <p className="text-sm text-gray-500">{getCityName(flight.to_city)}</p>
                           </div>
                         </div>
                       </div>
@@ -312,11 +350,14 @@ const Index = () => {
                           <p className="text-sm text-gray-500">kişi başı</p>
                         </div>
                         <Button
-                          onClick={() => handleBookFlight(flight)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFlightSelect(flight.flight_id);
+                          }}
                           size="lg"
                           className="w-full lg:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200"
                         >
-                          Rezervasyon Yap
+                          Detayları Gör
                         </Button>
                       </div>
                     </div>
