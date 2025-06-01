@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Plane, MapPin, Clock, Users, CreditCard, User, Mail, AlertCircle } from "lucide-react";
@@ -40,12 +39,12 @@ const FlightDetail = () => {
     try {
       const response = await fetch(`http://localhost:3001/api/flights/${id}`);
       if (!response.ok) {
-        throw new Error('Uçuş bulunamadı');
+        throw new Error('Flight not found');
       }
       const data = await response.json();
       setFlight(data);
     } catch (error) {
-      toast.error("Uçuş detayları yüklenemedi");
+      toast.error("Failed to load flight details");
       navigate("/");
     } finally {
       setLoading(false);
@@ -62,9 +61,9 @@ const FlightDetail = () => {
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.passenger_name || !formData.passenger_surname || !formData.passenger_email) {
-      toast.error("Lütfen tüm zorunlu alanları doldurun");
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -85,10 +84,10 @@ const FlightDetail = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Rezervasyon başarısız');
+        throw new Error(data.error || 'Booking failed');
       }
 
-      toast.success("Rezervasyon başarıyla tamamlandı!");
+      toast.success("Booking completed successfully!");
       navigate(`/booking-confirmation/${data.ticket_id}`, {
         state: { 
           ticketId: data.ticket_id, 
@@ -97,7 +96,7 @@ const FlightDetail = () => {
         }
       });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Rezervasyon başarısız");
+      toast.error(error instanceof Error ? error.message : "Booking failed");
     } finally {
       setBookingLoading(false);
     }
@@ -117,10 +116,10 @@ const FlightDetail = () => {
         <Card className="max-w-md mx-auto">
           <CardContent className="p-8 text-center">
             <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Uçuş Bulunamadı</h2>
-            <p className="text-gray-600 mb-4">İstediğiniz uçuş bulunamadı.</p>
+            <h2 className="text-xl font-semibold mb-2">Flight Not Found</h2>
+            <p className="text-gray-600 mb-4">The flight you requested could not be found.</p>
             <Button onClick={() => navigate("/")} className="w-full">
-              Ana Sayfaya Dön
+              Return to Home
             </Button>
           </CardContent>
         </Card>
@@ -142,7 +141,7 @@ const FlightDetail = () => {
           onClick={() => navigate("/")}
           className="mb-6"
         >
-          ← Ana Sayfaya Dön
+          ← Back to Home
         </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -151,7 +150,7 @@ const FlightDetail = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Plane className="h-6 w-6 mr-2 text-blue-600" />
-                Uçuş Detayları
+                Flight Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -159,37 +158,37 @@ const FlightDetail = () => {
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   {flight.from_city} → {flight.to_city}
                 </h2>
-                <p className="text-gray-600">Uçuş {flight.flight_id}</p>
+                <p className="text-gray-600">Flight {flight.flight_id}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <MapPin className="h-5 w-5 text-blue-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Kalkış</p>
+                  <p className="text-sm text-gray-600">Departure</p>
                   <p className="font-semibold">{flight.from_city}</p>
                   <p className="text-lg font-bold text-blue-600">
-                    {departureTime.toLocaleTimeString('tr-TR', { 
+                    {departureTime.toLocaleTimeString('en-US', { 
                       hour: '2-digit', 
                       minute: '2-digit' 
                     })}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {departureTime.toLocaleDateString('tr-TR')}
+                    {departureTime.toLocaleDateString('en-US')}
                   </p>
                 </div>
 
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <MapPin className="h-5 w-5 text-orange-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Varış</p>
+                  <p className="text-sm text-gray-600">Arrival</p>
                   <p className="font-semibold">{flight.to_city}</p>
                   <p className="text-lg font-bold text-orange-600">
-                    {arrivalTime.toLocaleTimeString('tr-TR', { 
+                    {arrivalTime.toLocaleTimeString('en-US', { 
                       hour: '2-digit', 
                       minute: '2-digit' 
                     })}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {arrivalTime.toLocaleDateString('tr-TR')}
+                    {arrivalTime.toLocaleDateString('en-US')}
                   </p>
                 </div>
               </div>
@@ -198,14 +197,14 @@ const FlightDetail = () => {
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 text-gray-500 mr-2" />
                   <div>
-                    <p className="text-sm text-gray-600">Uçuş Süresi</p>
-                    <p className="font-semibold">{hours}s {minutes}dk</p>
+                    <p className="text-sm text-gray-600">Flight Duration</p>
+                    <p className="font-semibold">{hours}h {minutes}m</p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Users className="h-5 w-5 text-gray-500 mr-2" />
                   <div>
-                    <p className="text-sm text-gray-600">Müsait Koltuk</p>
+                    <p className="text-sm text-gray-600">Seats Available</p>
                     <p className="font-semibold">{flight.seats_available}/{flight.seats_total}</p>
                   </div>
                 </div>
@@ -215,7 +214,7 @@ const FlightDetail = () => {
                 <p className="text-3xl font-bold text-blue-600 mb-2">
                   {flight.price} ₺
                 </p>
-                <p className="text-gray-600">kişi başı</p>
+                <p className="text-gray-600">per person</p>
               </div>
             </CardContent>
           </Card>
@@ -225,7 +224,7 @@ const FlightDetail = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <CreditCard className="h-6 w-6 mr-2 text-green-600" />
-                Rezervasyon Bilgileri
+                Booking Information
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -234,28 +233,28 @@ const FlightDetail = () => {
                   <div className="space-y-2">
                     <Label htmlFor="passenger_name" className="flex items-center">
                       <User className="h-4 w-4 mr-2" />
-                      Ad *
+                      First Name *
                     </Label>
                     <Input
                       id="passenger_name"
                       name="passenger_name"
                       value={formData.passenger_name}
                       onChange={handleInputChange}
-                      placeholder="Adınız"
+                      placeholder="Your first name"
                       required
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="passenger_surname" className="flex items-center">
                       <User className="h-4 w-4 mr-2" />
-                      Soyad *
+                      Last Name *
                     </Label>
                     <Input
                       id="passenger_surname"
                       name="passenger_surname"
                       value={formData.passenger_surname}
                       onChange={handleInputChange}
-                      placeholder="Soyadınız"
+                      placeholder="Your last name"
                       required
                     />
                   </div>
@@ -264,7 +263,7 @@ const FlightDetail = () => {
                 <div className="space-y-2">
                   <Label htmlFor="passenger_email" className="flex items-center">
                     <Mail className="h-4 w-4 mr-2" />
-                    E-posta *
+                    Email *
                   </Label>
                   <Input
                     id="passenger_email"
@@ -272,7 +271,7 @@ const FlightDetail = () => {
                     type="email"
                     value={formData.passenger_email}
                     onChange={handleInputChange}
-                    placeholder="ornek@email.com"
+                    placeholder="example@email.com"
                     required
                   />
                 </div>
@@ -280,55 +279,46 @@ const FlightDetail = () => {
                 <div className="space-y-2">
                   <Label htmlFor="seat_number" className="flex items-center">
                     <Users className="h-4 w-4 mr-2" />
-                    Koltuk Numarası (Opsiyonel)
+                    Seat Number (Optional)
                   </Label>
                   <Input
                     id="seat_number"
                     name="seat_number"
                     value={formData.seat_number}
                     onChange={handleInputChange}
-                    placeholder="Örn: 12A"
+                    placeholder="e.g., 12A"
                   />
                   <p className="text-sm text-gray-500">
-                    Boş bırakırsanız otomatik atanacaktır
+                    Leave blank to auto-assign
                   </p>
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Rezervasyon Özeti</h4>
+                  <h4 className="font-semibold mb-2">Booking Summary</h4>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Uçuş:</span>
+                    <span>Flight:</span>
                     <span>{flight.from_city} → {flight.to_city}</span>
                   </div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Tarih:</span>
-                    <span>{departureTime.toLocaleDateString('tr-TR')}</span>
+                    <span>Date:</span>
+                    <span>{departureTime.toLocaleDateString('en-US')}</span>
                   </div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Saat:</span>
-                    <span>{departureTime.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span>Time:</span>
+                    <span>{departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <div className="flex justify-between font-semibold text-lg pt-2 border-t">
-                    <span>Toplam:</span>
+                    <span>Total:</span>
                     <span className="text-blue-600">{flight.price} ₺</span>
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={bookingLoading || flight.seats_available === 0}
-                  className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold"
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={bookingLoading}
                 >
-                  {bookingLoading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Rezervasyon Yapılıyor...
-                    </div>
-                  ) : flight.seats_available === 0 ? (
-                    "Uçuş Dolu"
-                  ) : (
-                    "Rezervasyonu Tamamla"
-                  )}
+                  {bookingLoading ? "Booking..." : "Book Flight"}
                 </Button>
               </form>
             </CardContent>

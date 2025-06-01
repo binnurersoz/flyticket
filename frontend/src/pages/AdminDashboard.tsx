@@ -44,13 +44,13 @@ const AdminDashboard = () => {
     try {
       const response = await fetch('http://localhost:3001/api/flights');
       if (!response.ok) {
-        throw new Error('Uçuşlar yüklenemedi');
+        throw new Error('Failed to fetch flights');
       }
       const data = await response.json();
       setFlights(data);
       calculateStats(data);
     } catch (error) {
-      toast.error("Uçuşlar yüklenemedi");
+      toast.error("Failed to fetch flights");
     } finally {
       setLoading(false);
     }
@@ -72,12 +72,12 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
-    toast.success("Başarıyla çıkış yapıldı");
+    toast.success("Successfully logged out");
     navigate('/admin/login');
   };
 
   const deleteFlight = async (flightId: string) => {
-    if (!window.confirm('Bu uçuşu silmek istediğinizden emin misiniz?')) {
+    if (!window.confirm('Are you sure you want to delete this flight?')) {
       return;
     }
 
@@ -91,13 +91,13 @@ const AdminDashboard = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Uçuş silinemedi');
+        throw new Error('Failed to delete flight');
       }
 
-      toast.success("Uçuş başarıyla silindi");
+      toast.success("Flight deleted successfully");
       fetchFlights(); // Refresh the list
     } catch (error) {
-      toast.error("Uçuş silinirken hata oluştu");
+      toast.error("An error occurred while deleting the flight");
     }
   };
 
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
                 className="bg-green-600 hover:bg-green-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Yeni Uçuş
+                New Flight
               </Button>
               <Button
                 onClick={handleLogout}
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
                 className="text-red-600 border-red-300 hover:bg-red-50"
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Çıkış
+                Logout
               </Button>
             </div>
           </div>
@@ -145,7 +145,7 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Toplam Uçuş</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Total Flights</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">{stats.totalFlights}</div>
@@ -154,7 +154,7 @@ const AdminDashboard = () => {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Toplam Koltuk</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Total Seats</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">{stats.totalSeats}</div>
@@ -163,19 +163,19 @@ const AdminDashboard = () => {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Satılan Bilet</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Tickets Sold</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">{stats.bookedSeats}</div>
               <div className="text-sm text-gray-500">
-                %{stats.totalSeats > 0 ? Math.round((stats.bookedSeats / stats.totalSeats) * 100) : 0} doluluk
+                %{stats.totalSeats > 0 ? Math.round((stats.bookedSeats / stats.totalSeats) * 100) : 0} filled
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Toplam Gelir</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-600">{stats.revenue.toLocaleString()} ₺</div>
@@ -187,14 +187,14 @@ const AdminDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Uçuş Yönetimi</span>
+              <span>Flight Management</span>
               <Button
                 onClick={() => navigate('/admin/flights/new')}
                 size="sm"
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4 mr-1" />
-                Ekle
+                Add
               </Button>
             </CardTitle>
           </CardHeader>
@@ -202,12 +202,12 @@ const AdminDashboard = () => {
             {flights.length === 0 ? (
               <div className="text-center py-8">
                 <Plane className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Henüz uçuş bulunmuyor</p>
+                <p className="text-gray-500">No flights available yet</p>
                 <Button
                   onClick={() => navigate('/admin/flights/new')}
                   className="mt-4"
                 >
-                  İlk Uçuşu Ekle
+                  Add First Flight
                 </Button>
               </div>
             ) : (
@@ -215,12 +215,12 @@ const AdminDashboard = () => {
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Uçuş ID</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Güzergah</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Tarih/Saat</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Fiyat</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Koltuk</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">İşlemler</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Flight ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Route</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Date/Time</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Price</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Seats</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -255,7 +255,7 @@ const AdminDashboard = () => {
                             <span className="text-gray-600">{flight.seats_total}</span>
                           </div>
                           <div className="text-xs text-gray-500">
-                            %{Math.round(((flight.seats_total - flight.seats_available) / flight.seats_total) * 100)} dolu
+                            %{Math.round(((flight.seats_total - flight.seats_available) / flight.seats_total) * 100)} filled
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm">

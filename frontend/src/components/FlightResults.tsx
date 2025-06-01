@@ -29,8 +29,8 @@ export const FlightResults = ({ flights, getCityName }: FlightResultsProps) => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Uygun Uçuşlar</h2>
-        <p className="text-gray-600">{flights.length} adet uçuş bulundu</p>
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Available Flights</h2>
+        <p className="text-gray-600">{flights.length} flights found</p>
       </div>
 
       <div className="grid gap-6 max-w-4xl mx-auto">

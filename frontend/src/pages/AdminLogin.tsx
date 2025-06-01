@@ -28,7 +28,7 @@ const AdminLogin = () => {
     e.preventDefault();
     
     if (!formData.username || !formData.password) {
-      toast.error("Lütfen tüm alanları doldurun");
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -46,15 +46,15 @@ const AdminLogin = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Giriş başarısız');
+        throw new Error(data.error || 'Login failed');
       }
 
       // Store the token
       localStorage.setItem('adminToken', data.token);
-      toast.success("Giriş başarılı!");
+      toast.success("Login successful!");
       navigate("/admin/dashboard");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Giriş başarısız");
+      toast.error(error instanceof Error ? error.message : "Login failed");
     } finally {
       setLoading(false);
     }
@@ -69,22 +69,22 @@ const AdminLogin = () => {
               <Plane className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Admin Girişi</CardTitle>
-          <p className="text-gray-600">FlyTicket Yönetici Paneli</p>
+          <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+          <p className="text-gray-600">FlyTicket Admin Panel</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" className="flex items-center">
                 <User className="h-4 w-4 mr-2" />
-                Kullanıcı Adı
+                Username
               </Label>
               <Input
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                placeholder="Kullanıcı adınızı girin"
+                placeholder="Enter your username"
                 required
                 className="h-12"
               />
@@ -93,7 +93,7 @@ const AdminLogin = () => {
             <div className="space-y-2">
               <Label htmlFor="password" className="flex items-center">
                 <Lock className="h-4 w-4 mr-2" />
-                Parola
+                Password
               </Label>
               <Input
                 id="password"
@@ -101,7 +101,7 @@ const AdminLogin = () => {
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Parolanızı girin"
+                placeholder="Enter your password"
                 required
                 className="h-12"
               />
@@ -115,10 +115,10 @@ const AdminLogin = () => {
               {loading ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                  Giriş Yapılıyor...
+                  Logging in...
                 </div>
               ) : (
-                "Giriş Yap"
+                "Login"
               )}
             </Button>
           </form>
@@ -129,7 +129,7 @@ const AdminLogin = () => {
               onClick={() => navigate("/")}
               className="w-full"
             >
-              Ana Sayfaya Dön
+              Back to Home
             </Button>
           </div>
         </CardContent>

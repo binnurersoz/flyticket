@@ -42,11 +42,11 @@ export const SearchForm = ({ cities, onSearch, loading }: SearchFormProps) => {
         <div className="space-y-2">
           <Label htmlFor="fromCity" className="flex items-center text-gray-700 font-semibold">
             <MapPin className="h-4 w-4 mr-2 text-blue-600" />
-            Nereden
+            From
           </Label>
           <Select value={fromCity} onValueChange={setFromCity}>
             <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-500 transition-colors">
-              <SelectValue placeholder="Şehir seçin" />
+              <SelectValue placeholder="Select City" />
             </SelectTrigger>
             <SelectContent className="bg-white">
               {cities.map(city => (
@@ -75,11 +75,11 @@ export const SearchForm = ({ cities, onSearch, loading }: SearchFormProps) => {
         <div className="space-y-2">
           <Label htmlFor="toCity" className="flex items-center text-gray-700 font-semibold">
             <MapPin className="h-4 w-4 mr-2 text-orange-600" />
-            Nereye
+            To
           </Label>
           <Select value={toCity} onValueChange={setToCity}>
             <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-blue-500 transition-colors">
-              <SelectValue placeholder="Şehir seçin" />
+              <SelectValue placeholder="Select City" />
             </SelectTrigger>
             <SelectContent className="bg-white">
               {cities.map(city => (
@@ -95,7 +95,7 @@ export const SearchForm = ({ cities, onSearch, loading }: SearchFormProps) => {
         <div className="space-y-2">
           <Label htmlFor="date" className="flex items-center text-gray-700 font-semibold">
             <Calendar className="h-4 w-4 mr-2 text-green-600" />
-            Tarih
+            Date
           </Label>
           <Input
             type="date"
@@ -117,12 +117,12 @@ export const SearchForm = ({ cities, onSearch, loading }: SearchFormProps) => {
         {loading ? (
           <div className="flex items-center">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-            Uçuşlar Aranıyor...
+            Searching for Flights...
           </div>
         ) : (
           <div className="flex items-center">
             <Search className="h-5 w-5 mr-3" />
-            Uçuşları Ara
+            Search Flights
           </div>
         )}
       </Button>

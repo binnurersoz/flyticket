@@ -1,12 +1,17 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Plane, MapPin, Calendar, Clock, DollarSign, Users, ArrowLeft } from "lucide-react";
+import {
+  Plane, MapPin, Calendar, Clock, DollarSign, Users, ArrowLeft
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface City {
@@ -29,7 +34,7 @@ const AdminFlightForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = !!id;
-  
+
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,43 +49,32 @@ const AdminFlightForm = () => {
   useEffect(() => {
     checkAuth();
     fetchCities();
-    if (isEdit) {
-      fetchFlightDetails();
-    }
+    if (isEdit) fetchFlightDetails();
   }, [id]);
 
   const checkAuth = () => {
     const token = localStorage.getItem('adminToken');
-    if (!token) {
-      navigate('/admin/login');
-    }
+    if (!token) navigate('/admin/login');
   };
 
   const fetchCities = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/cities');
-      if (!response.ok) {
-        throw new Error('Şehirler yüklenemedi');
-      }
+      if (!response.ok) throw new Error('Failed to load cities');
       const data = await response.json();
       setCities(data);
     } catch (error) {
-      toast.error("Şehirler yüklenemedi");
+      toast.error("Failed to load cities");
     }
   };
 
   const fetchFlightDetails = async () => {
     try {
       const response = await fetch(`http://localhost:3001/api/flights/${id}`);
-      if (!response.ok) {
-        throw new Error('Uçuş bulunamadı');
-      }
+      if (!response.ok) throw new Error('Flight not found');
       const flight: Flight = await response.json();
-      
-      // Convert datetime for input fields
       const departureDate = new Date(flight.departure_time);
       const arrivalDate = new Date(flight.arrival_time);
-      
       setFormData({
         from_city: flight.from_city,
         to_city: flight.to_city,
@@ -90,7 +84,7 @@ const AdminFlightForm = () => {
         seats_total: flight.seats_total.toString()
       });
     } catch (error) {
-      toast.error("Uçuş detayları yüklenemedi");
+      toast.error("Failed to load flight details");
       navigate('/admin/dashboard');
     }
   };
@@ -111,37 +105,40 @@ const AdminFlightForm = () => {
   };
 
   const validateForm = () => {
-    if (!formData.from_city || !formData.to_city || !formData.departure_time || 
-        !formData.arrival_time || !formData.price || !formData.seats_total) {
-      toast.error("Lütfen tüm alanları doldurun");
+    const {
+      from_city, to_city, departure_time, arrival_time, price, seats_total
+    } = formData;
+
+    if (!from_city || !to_city || !departure_time || !arrival_time || !price || !seats_total) {
+      toast.error("Please fill out all fields");
       return false;
     }
 
-    if (formData.from_city === formData.to_city) {
-      toast.error("Kalkış ve varış şehirleri aynı olamaz");
+    if (from_city === to_city) {
+      toast.error("Departure and arrival cities must be different");
       return false;
     }
 
-    const departureTime = new Date(formData.departure_time);
-    const arrivalTime = new Date(formData.arrival_time);
+    const dep = new Date(departure_time);
+    const arr = new Date(arrival_time);
 
-    if (arrivalTime <= departureTime) {
-      toast.error("Varış zamanı kalkış zamanından sonra olmalıdır");
+    if (arr <= dep) {
+      toast.error("Arrival time must be after departure time");
       return false;
     }
 
-    if (departureTime < new Date()) {
-      toast.error("Kalkış zamanı gelecekte olmalıdır");
+    if (dep < new Date()) {
+      toast.error("Departure time must be in the future");
       return false;
     }
 
-    if (parseInt(formData.price) <= 0) {
-      toast.error("Fiyat 0'dan büyük olmalıdır");
+    if (parseInt(price) <= 0) {
+      toast.error("Price must be greater than 0");
       return false;
     }
 
-    if (parseInt(formData.seats_total) <= 0) {
-      toast.error("Koltuk sayısı 0'dan büyük olmalıdır");
+    if (parseInt(seats_total) <= 0) {
+      toast.error("Seat count must be greater than 0");
       return false;
     }
 
@@ -150,19 +147,16 @@ const AdminFlightForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
+    const token = localStorage.getItem('adminToken');
 
     try {
-      const token = localStorage.getItem('adminToken');
-      const url = isEdit 
+      const url = isEdit
         ? `http://localhost:3001/api/flights/${id}`
         : 'http://localhost:3001/api/flights';
-      
+
       const method = isEdit ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -184,13 +178,13 @@ const AdminFlightForm = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || `Uçuş ${isEdit ? 'güncellenemedi' : 'eklenemedi'}`);
+        throw new Error(data.error || `Flight could not be ${isEdit ? 'updated' : 'added'}`);
       }
 
-      toast.success(`Uçuş başarıyla ${isEdit ? 'güncellendi' : 'eklendi'}!`);
+      toast.success(`Flight ${isEdit ? 'updated' : 'added'} successfully!`);
       navigate('/admin/dashboard');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : `Uçuş ${isEdit ? 'güncellenemedi' : 'eklenemedi'}`);
+      toast.error(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -209,11 +203,11 @@ const AdminFlightForm = () => {
               className="mr-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Geri
+              Back
             </Button>
             <Plane className="h-8 w-8 text-blue-600 mr-3" />
             <h1 className="text-2xl font-bold text-gray-800">
-              {isEdit ? 'Uçuş Düzenle' : 'Yeni Uçuş Ekle'}
+              {isEdit ? 'Edit Flight' : 'Add New Flight'}
             </h1>
           </div>
         </div>
@@ -225,24 +219,24 @@ const AdminFlightForm = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Plane className="h-6 w-6 mr-2 text-blue-600" />
-                Uçuş {isEdit ? 'Düzenle' : 'Ekle'}
+                {isEdit ? 'Edit Flight' : 'Add Flight'}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Route Selection */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Departure */}
                   <div className="space-y-2">
                     <Label className="flex items-center">
                       <MapPin className="h-4 w-4 mr-2 text-blue-600" />
-                      Kalkış Şehri
+                      Departure City
                     </Label>
-                    <Select 
-                      value={formData.from_city} 
+                    <Select
+                      value={formData.from_city}
                       onValueChange={(value) => handleSelectChange('from_city', value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Kalkış şehrini seçin" />
+                        <SelectValue placeholder="Select departure city" />
                       </SelectTrigger>
                       <SelectContent>
                         {cities.map(city => (
@@ -254,17 +248,18 @@ const AdminFlightForm = () => {
                     </Select>
                   </div>
 
+                  {/* Arrival */}
                   <div className="space-y-2">
                     <Label className="flex items-center">
                       <MapPin className="h-4 w-4 mr-2 text-orange-600" />
-                      Varış Şehri
+                      Arrival City
                     </Label>
-                    <Select 
-                      value={formData.to_city} 
+                    <Select
+                      value={formData.to_city}
                       onValueChange={(value) => handleSelectChange('to_city', value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Varış şehrini seçin" />
+                        <SelectValue placeholder="Select arrival city" />
                       </SelectTrigger>
                       <SelectContent>
                         {cities.map(city => (
@@ -277,12 +272,12 @@ const AdminFlightForm = () => {
                   </div>
                 </div>
 
-                {/* Time Selection */}
+                {/* Times */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="departure_time" className="flex items-center">
                       <Clock className="h-4 w-4 mr-2 text-green-600" />
-                      Kalkış Zamanı
+                      Departure Time
                     </Label>
                     <Input
                       id="departure_time"
@@ -297,7 +292,7 @@ const AdminFlightForm = () => {
                   <div className="space-y-2">
                     <Label htmlFor="arrival_time" className="flex items-center">
                       <Clock className="h-4 w-4 mr-2 text-red-600" />
-                      Varış Zamanı
+                      Arrival Time
                     </Label>
                     <Input
                       id="arrival_time"
@@ -310,12 +305,12 @@ const AdminFlightForm = () => {
                   </div>
                 </div>
 
-                {/* Price and Seats */}
+                {/* Price & Seats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price" className="flex items-center">
                       <DollarSign className="h-4 w-4 mr-2 text-purple-600" />
-                      Fiyat (₺)
+                      Price (₺)
                     </Label>
                     <Input
                       id="price"
@@ -324,7 +319,7 @@ const AdminFlightForm = () => {
                       min="1"
                       value={formData.price}
                       onChange={handleInputChange}
-                      placeholder="Fiyat girin"
+                      placeholder="Enter the price"
                       required
                     />
                   </div>
@@ -332,7 +327,7 @@ const AdminFlightForm = () => {
                   <div className="space-y-2">
                     <Label htmlFor="seats_total" className="flex items-center">
                       <Users className="h-4 w-4 mr-2 text-yellow-600" />
-                      Toplam Koltuk
+                      Total Seats
                     </Label>
                     <Input
                       id="seats_total"
@@ -342,13 +337,13 @@ const AdminFlightForm = () => {
                       max="500"
                       value={formData.seats_total}
                       onChange={handleInputChange}
-                      placeholder="Koltuk sayısı"
+                      placeholder="Enter seat count"
                       required
                     />
                   </div>
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit */}
                 <div className="flex gap-4 pt-4">
                   <Button
                     type="button"
@@ -356,7 +351,7 @@ const AdminFlightForm = () => {
                     onClick={() => navigate('/admin/dashboard')}
                     className="flex-1"
                   >
-                    İptal
+                    Cancel
                   </Button>
                   <Button
                     type="submit"
@@ -366,10 +361,10 @@ const AdminFlightForm = () => {
                     {loading ? (
                       <div className="flex items-center">
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                        {isEdit ? 'Güncelleniyor...' : 'Ekleniyor...'}
+                        {isEdit ? 'Updating...' : 'Adding...'}
                       </div>
                     ) : (
-                      isEdit ? 'Uçuşu Güncelle' : 'Uçuş Ekle'
+                      isEdit ? 'Update Flight' : 'Add Flight'
                     )}
                   </Button>
                 </div>
@@ -383,3 +378,4 @@ const AdminFlightForm = () => {
 };
 
 export default AdminFlightForm;
+ 

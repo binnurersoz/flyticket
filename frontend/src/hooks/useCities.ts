@@ -20,7 +20,7 @@ export const useCities = () => {
         throw new Error('Şehirler yüklenemedi');
       }
       const data = await response.json();
-      // Backend'den gelen city_id'leri string'e çevir
+      
       const citiesWithStringIds = data.map((city: any) => ({
         ...city,
         city_id: city.city_id.toString()

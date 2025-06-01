@@ -31,24 +31,24 @@ const BookingConfirmation = () => {
     if (!ticketInfo) return;
 
     const ticketText = `
-FLYTICKET - UÇAK BİLETİ
-========================
+FLYTICKET - AIRPLANE TICKET
+===========================
 
-Bilet ID: ${ticketInfo.ticketId}
-Yolcu: ${ticketInfo.passengerInfo.passenger_name} ${ticketInfo.passengerInfo.passenger_surname}
-E-posta: ${ticketInfo.passengerInfo.passenger_email}
+Ticket ID: ${ticketInfo.ticketId}
+Passenger: ${ticketInfo.passengerInfo.passenger_name} ${ticketInfo.passengerInfo.passenger_surname}
+Email: ${ticketInfo.passengerInfo.passenger_email}
 
-UÇUŞ BİLGİLERİ
---------------
-Güzergah: ${ticketInfo.flight.from_city} → ${ticketInfo.flight.to_city}
-Kalkış: ${new Date(ticketInfo.flight.departure_time).toLocaleString('tr-TR')}
-Varış: ${new Date(ticketInfo.flight.arrival_time).toLocaleString('tr-TR')}
-Fiyat: ${ticketInfo.flight.price} ₺
-${ticketInfo.passengerInfo.seat_number ? `Koltuk: ${ticketInfo.passengerInfo.seat_number}` : 'Koltuk: Otomatik atanacak'}
+FLIGHT INFORMATION
+------------------
+Route: ${ticketInfo.flight.from_city} → ${ticketInfo.flight.to_city}
+Departure: ${new Date(ticketInfo.flight.departure_time).toLocaleString('en-US')}
+Arrival: ${new Date(ticketInfo.flight.arrival_time).toLocaleString('en-US')}
+Price: ${ticketInfo.flight.price} ₺
+${ticketInfo.passengerInfo.seat_number ? `Seat: ${ticketInfo.passengerInfo.seat_number}` : 'Seat: Will be assigned automatically'}
 
-Bu bileti uçuş günü yanınızda bulundurunuz.
-FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
-    `;
+Please keep this ticket with you on the day of the flight.
+Thank you for choosing FlyTicket!
+`;
 
     const blob = new Blob([ticketText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -79,13 +79,13 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
             <CardContent className="p-8 text-center">
               <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
               <h1 className="text-3xl font-bold text-green-800 mb-2">
-                Rezervasyon Başarılı!
+                Booking Successful!
               </h1>
               <p className="text-green-700 mb-4">
-                Biletiniz başarıyla oluşturuldu. Rezervasyon detaylarını aşağıda görebilirsiniz.
+                Your ticket has been successfully created. You can see your booking details below.
               </p>
               <div className="bg-white p-4 rounded-lg inline-block">
-                <p className="text-sm text-gray-600 mb-1">Bilet Numaranız</p>
+                <p className="text-sm text-gray-600 mb-1">Your Ticket Number</p>
                 <p className="text-xl font-bold text-blue-600">{ticketInfo.ticketId}</p>
               </div>
             </CardContent>
@@ -96,7 +96,7 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Ticket className="h-6 w-6 mr-2 text-blue-600" />
-                Bilet Detayları
+                Ticket Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -104,13 +104,13 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
               <div>
                 <h3 className="font-semibold text-lg mb-3 flex items-center">
                   <Plane className="h-5 w-5 mr-2 text-blue-600" />
-                  Uçuş Bilgileri
+                  Flight Information
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center">
                       <MapPin className="h-5 w-5 text-blue-600 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">Kalkış</p>
+                      <p className="text-sm text-gray-600">Departure</p>
                       <p className="font-semibold">{ticketInfo.flight.from_city}</p>
                       <p className="text-lg font-bold text-blue-600">
                         {departureTime.toLocaleTimeString('tr-TR', { 
@@ -124,7 +124,7 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
                     </div>
                     <div className="text-center">
                       <MapPin className="h-5 w-5 text-orange-600 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600">Varış</p>
+                      <p className="text-sm text-gray-600">Arrival</p>
                       <p className="font-semibold">{ticketInfo.flight.to_city}</p>
                       <p className="text-lg font-bold text-orange-600">
                         {arrivalTime.toLocaleTimeString('tr-TR', { 
@@ -138,7 +138,7 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
                     </div>
                   </div>
                   <div className="text-center pt-3 border-t">
-                    <p className="text-sm text-gray-600">Toplam Ücret</p>
+                    <p className="text-sm text-gray-600">Total Price</p>
                     <p className="text-2xl font-bold text-blue-600">{ticketInfo.flight.price} ₺</p>
                   </div>
                 </div>
@@ -148,23 +148,23 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
               <div>
                 <h3 className="font-semibold text-lg mb-3 flex items-center">
                   <User className="h-5 w-5 mr-2 text-green-600" />
-                  Yolcu Bilgileri
+                  Passenger Information
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Ad Soyad:</span>
+                    <span className="text-gray-600">Name:</span>
                     <span className="font-semibold">
                       {ticketInfo.passengerInfo.passenger_name} {ticketInfo.passengerInfo.passenger_surname}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">E-posta:</span>
+                    <span className="text-gray-600">Email:</span>
                     <span className="font-semibold">{ticketInfo.passengerInfo.passenger_email}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Koltuk:</span>
+                    <span className="text-gray-600">Seat:</span>
                     <span className="font-semibold">
-                      {ticketInfo.passengerInfo.seat_number || "Otomatik atanacak"}
+                      {ticketInfo.passengerInfo.seat_number || "Will be assigned automatically"}
                     </span>
                   </div>
                 </div>
@@ -172,12 +172,12 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
 
               {/* Important Notes */}
               <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-                <h4 className="font-semibold text-yellow-800 mb-2">Önemli Notlar</h4>
+                <h4 className="font-semibold text-yellow-800 mb-2">Important Notes</h4>
                 <ul className="text-sm text-yellow-700 space-y-1">
-                  <li>• Uçuş günü en az 2 saat öncesinde havalimanında bulununuz</li>
-                  <li>• Yanınızda geçerli kimlik belgenizi bulundurunuz</li>
-                  <li>• Bilet numaranızı kaydediniz ve uçuş günü yanınızda bulundurunuz</li>
-                  <li>• Check-in işlemlerini uçuştan 24 saat önce yapabilirsiniz</li>
+                   <li>• Please arrive at the airport at least 2 hours before your flight</li>
+                  <li>• Carry a valid ID with you</li>
+                  <li>• Save your ticket number and keep it with you on the flight day</li>
+                  <li>• Check-in can be done 24 hours before the flight</li>
                 </ul>
               </div>
             </CardContent>
@@ -190,7 +190,7 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
               className="h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
             >
               <Download className="h-5 w-5 mr-2" />
-              Bileti İndir
+              Download Ticket
             </Button>
             <Button
               onClick={() => navigate("/")}
@@ -198,25 +198,25 @@ FlyTicket'i tercih ettiğiniz için teşekkür ederiz!
               className="h-12"
             >
               <Home className="h-5 w-5 mr-2" />
-              Ana Sayfaya Dön
+              Back to Home
             </Button>
           </div>
 
           {/* Support Info */}
           <Card className="mt-6 bg-blue-50 border-blue-200">
             <CardContent className="p-6 text-center">
-              <h4 className="font-semibold text-blue-800 mb-2">Destek</h4>
+              <h4 className="font-semibold text-blue-800 mb-2">Support</h4>
               <p className="text-blue-700 text-sm mb-3">
-                Herhangi bir sorunuz olursa bizimle iletişime geçebilirsiniz.
+                If you have any questions, feel free to contact us.
               </p>
               <div className="flex justify-center space-x-4 text-sm">
                 <div className="flex items-center">
                   <Mail className="h-4 w-4 mr-1 text-blue-600" />
-                  <span>destek@flyticket.com</span>
+                  <span>support@flyticket.com</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-1 text-blue-600" />
-                  <span>7/24 Destek</span>
+                  <span>24/7 Support</span>
                 </div>
               </div>
             </CardContent>

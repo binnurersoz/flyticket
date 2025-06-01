@@ -30,7 +30,7 @@ export const HeroSection = ({ cities, onSearch, loading }: HeroSectionProps) => 
             <h1 className="text-5xl font-bold">FlyTicket</h1>
           </div>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Türkiye'nin her köşesine güvenli ve konforlu uçuşlar. Hayalinizdeki destinasyona bir tık uzaktasınız.
+            Safe and comfortable flights to every corner of Türkiye. Your dream destination is just one click away.
           </p>
           <div className="mt-6">
             <Button
@@ -38,7 +38,7 @@ export const HeroSection = ({ cities, onSearch, loading }: HeroSectionProps) => 
               variant="outline"
               className="bg-white/10 border-white/30 text-white hover:bg-white/20"
             >
-              Admin Girişi
+              Admin Login
             </Button>
           </div>
         </div>

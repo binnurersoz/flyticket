@@ -1,73 +1,87 @@
-# Welcome to your Lovable project
+# FlyTicket
 
-## Project info
+A full-stack flight ticket booking and management system with an admin panel.
 
-**URL**: https://lovable.dev/projects/b8a00ffa-bf08-469e-821f-c9323a3b40d3
+## Technologies Used
 
-## How can I edit this code?
+- **Frontend:** React, TypeScript, Vite, TailwindCSS, Shadcn UI, Radix UI, Lucide Icons
+- **Backend:** Node.js, Express.js, MySQL
+- **Other:** JWT (Authentication), bcrypt (Password hashing)
 
-There are several ways of editing your application.
+## Project Structure
 
-**Use Lovable**
+- `frontend/` — React-based user and admin interface
+- `backend/` — Express.js REST API and database logic
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b8a00ffa-bf08-469e-821f-c9323a3b40d3) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## How to Run the Project
 
-**Use your preferred IDE**
+### 1. Clone the Repository
+```bash
+git clone <repo-url>
+cd <repo-folder>
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 2. Database Setup
+- Create a MySQL database (e.g. `flyticket_db`).
+- Import or run the SQL scripts to create the tables:
+  - `City` and `Flight` tables (see below for example schemas)
+- (Optional) Seed cities using `backend/seed/citiesSeed.js`.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+#### Example Table Schemas
+```sql
+CREATE TABLE City (
+  city_id INT AUTO_INCREMENT PRIMARY KEY,
+  city_name VARCHAR(255) NOT NULL
+);
 
-Follow these steps:
+CREATE TABLE Flight (
+  flight_id VARCHAR(36) PRIMARY KEY,
+  from_city VARCHAR(36),
+  to_city VARCHAR(36),
+  departure_time DATETIME,
+  arrival_time DATETIME,
+  price DECIMAL(10,2),
+  seats_total INT,
+  seats_available INT,
+  FOREIGN KEY (from_city) REFERENCES City(city_id),
+  FOREIGN KEY (to_city) REFERENCES City(city_id),
+  UNIQUE (from_city, departure_time),
+  UNIQUE (to_city, arrival_time)
+);
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 3. Backend Setup
+```bash
+cd backend
+npm install
+node server.js
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 4. Frontend Setup
+```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Admin Login Credentials
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Username:** `admin`
+- **Password:** `admin`
 
-**Use GitHub Codespaces**
+> (You can change these in the database or seed script.)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Features
+- Search and book flights as a user
+- Admin panel for managing flights
+- Add, edit, delete flights
+- View bookings
+- JWT-based authentication for admin
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/b8a00ffa-bf08-469e-821f-c9323a3b40d3) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

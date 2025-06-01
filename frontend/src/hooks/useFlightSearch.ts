@@ -20,12 +20,12 @@ export const useFlightSearch = () => {
 
   const searchFlights = async (fromCity: string, toCity: string, date: string) => {
     if (!fromCity || !toCity || !date) {
-      toast.error("Lütfen tüm alanları doldurun.");
+      toast.error("Please fill in all fields.");
       return;
     }
     
     if (fromCity === toCity) {
-      toast.error("Kalkış ve varış şehirleri aynı olamaz.");
+      toast.error("Departure and arrival cities cannot be the same.");
       return;
     }
 
@@ -42,20 +42,20 @@ export const useFlightSearch = () => {
       const response = await fetch(`http://localhost:3001/api/flights?${params}`);
       
       if (!response.ok) {
-        throw new Error('Uçuşlar yüklenemedi');
+        throw new Error('Failed to load flights');
       }
 
       const data = await response.json();
       setFlights(data);
       
       if (data.length > 0) {
-        toast.success(`${data.length} adet uçuş bulundu!`);
+        toast.success(`${data.length} flights found!`);
       } else {
-        toast.info("Belirtilen kriterlere uygun uçuş bulunamadı");
+        toast.info("No flights found matching your criteria.");
       }
     } catch (error) {
       console.error('Error searching flights:', error);
-      toast.error("Uçuş arama sırasında bir hata oluştu");
+      toast.error("An error occurred while searching for flights.");
       setFlights([]);
     } finally {
       setLoading(false);

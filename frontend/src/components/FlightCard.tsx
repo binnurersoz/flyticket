@@ -41,13 +41,13 @@ export const FlightCard = ({ flight, index, getCityName, onSelect }: FlightCardP
                 <h3 className="text-xl font-bold text-gray-800">
                   {getCityName(flight.from_city)} → {getCityName(flight.to_city)}
                 </h3>
-                <p className="text-sm text-gray-500">Uçuş {flight.flight_id.substring(0, 8)}</p>
+                <p className="text-sm text-gray-500">Flight {flight.flight_id.substring(0, 8)}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Kalkış</p>
+                <p className="text-sm text-gray-500 mb-1">Departure</p>
                 <p className="font-semibold text-gray-800">
                   {new Date(flight.departure_time).toLocaleTimeString('tr-TR', { 
                     hour: '2-digit', 
@@ -57,7 +57,7 @@ export const FlightCard = ({ flight, index, getCityName, onSelect }: FlightCardP
                 <p className="text-sm text-gray-500">{getCityName(flight.from_city)}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500 mb-1">Varış</p>
+                <p className="text-sm text-gray-500 mb-1">Arrival</p>
                 <p className="font-semibold text-gray-800">
                   {new Date(flight.arrival_time).toLocaleTimeString('tr-TR', { 
                     hour: '2-digit', 
@@ -74,14 +74,14 @@ export const FlightCard = ({ flight, index, getCityName, onSelect }: FlightCardP
             <div className="flex items-center justify-center mb-2">
               <Users className="h-4 w-4 text-gray-500 mr-1" />
               <span className="text-sm text-gray-500">
-                {flight.seats_available} koltuk kaldı
+                {flight.seats_available} seats left
               </span>
             </div>
             {flight.seats_available <= 10 && (
               <div className="flex items-center justify-center mb-3">
                 <Star className="h-4 w-4 text-orange-500 mr-1" />
                 <span className="text-sm text-orange-600 font-medium">
-                  Son koltuklarda!
+                  Selling out fast!
                 </span>
               </div>
             )}
@@ -93,7 +93,7 @@ export const FlightCard = ({ flight, index, getCityName, onSelect }: FlightCardP
               <p className="text-3xl font-bold text-blue-600 mb-1">
                 {flight.price} ₺
               </p>
-              <p className="text-sm text-gray-500">kişi başı</p>
+              <p className="text-sm text-gray-500">per person</p>
             </div>
             <Button
               onClick={(e) => {
@@ -103,7 +103,7 @@ export const FlightCard = ({ flight, index, getCityName, onSelect }: FlightCardP
               size="lg"
               className="w-full lg:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              Detayları Gör
+              View Details
             </Button>
           </div>
         </div>
